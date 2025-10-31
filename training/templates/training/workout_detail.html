@@ -1,0 +1,35 @@
+<h1>Trening {{ w.id }} – {{ w.date }}</h1>
+<p>
+	Czas: {{ w.duration_s }} s | Śr. HR: {{ w.avg_hr }} | Max HR: {{ w.max_hr }}
+</p>
+<canvas id="hrChart"></canvas>
+{{ data|json_script:"hr-data" }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+	const hrData = JSON.parse(document.getElementById("hr-data").textContent)
+
+  const labels = hrData.map(d => new Date(d.t).toLocaleTimeString());
+  const values = hrData.map(d => Number(d.hr) || null);
+
+  console.log('labels:', labels);
+  console.log('values:', values); // powinno być np. [118,125,134,142,151]
+
+  new Chart(document.getElementById('hrChart'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Tętno',
+        data: values,
+        fill: false,
+        spanGaps: true,
+        tension: 0.2
+      }]
+    },
+    options: {
+      scales: {
+        y: { suggestedMin: 80, suggestedMax: 180 }
+      }
+    }
+  });
+</script>

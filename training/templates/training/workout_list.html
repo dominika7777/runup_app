@@ -1,0 +1,14 @@
+<p><a href="{% url 'upload_gpx' %}">➕ Dodaj trening (GPX)</a></p>
+<h1>Treningi</h1>
+<ul>
+	{% for w in workouts %}
+	<li>
+		<a href="{% url 'workout_detail' w.id %}">
+			{{ w.date }} • {{ w.duration_s }} s • HRavg={{ w.avg_hr }} • HRmax={{
+			w.max_hr }}
+		</a>
+	</li>
+	{% empty %}
+	<li>Brak treningów — wgraj GPX (komenda import_gpx).</li>
+	{% endfor %}
+</ul>

@@ -1,0 +1,7 @@
+asgiref==3.10.0
+Django==5.2.7
+djangorestframework==3.16.1
+gpxpy==1.6.2
+python-dateutil==2.9.0.post0
+six==1.17.0
+sqlparse==0.5.3

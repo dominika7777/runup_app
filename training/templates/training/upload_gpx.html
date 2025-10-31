@@ -1,0 +1,17 @@
+<h1>Wgraj plik GPX</h1>
+
+{% if messages %}
+<ul>
+	{% for m in messages %}
+	<li>{{ m }}</li>
+	{% endfor %}
+</ul>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data">
+	{% csrf_token %}
+	<p><input type="file" name="gpx_file" accept=".gpx" required /></p>
+	<button type="submit">Wyślij</button>
+</form>
+
+<p><a href="{% url 'workout_list' %}">← Lista treningów</a></p>
