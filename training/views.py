@@ -34,3 +34,6 @@ def upload_gpx(request):
             return redirect('upload_gpx')
 
     return render(request, 'training/upload_gpx.html')
+
+def pace_calculator(request):
+    return render(request, 'training/pace_calculator.html')

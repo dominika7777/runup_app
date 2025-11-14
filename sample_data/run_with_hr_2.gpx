@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx creator="sample" version="1.1"
+     xmlns="http://www.topografix.com/GPX/1/1"
+     xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1">
+  <trk>
+    <name>Sample Run 2 with HR</name>
+    <trkseg>
+      <trkpt lat="52.2305" lon="21.0119">
+        <ele>102</ele>
+        <time>2025-10-28T18:30:00Z</time>
+        <extensions><gpxtpx:TrackPointExtension><gpxtpx:hr>110</gpxtpx:hr></gpxtpx:TrackPointExtension></extensions>
+      </trkpt>
+      <trkpt lat="52.2306" lon="21.0120">
+        <ele>102</ele>
+        <time>2025-10-28T18:30:30Z</time>
+        <extensions><gpxtpx:TrackPointExtension><gpxtpx:hr>118</gpxtpx:hr></gpxtpx:TrackPointExtension></extensions>
+      </trkpt>
+      <trkpt lat="52.2307" lon="21.0121">
+        <ele>103</ele>
+        <time>2025-10-28T18:31:00Z</time>
+        <extensions><gpxtpx:TrackPointExtension><gpxtpx:hr>126</gpxtpx:hr></gpxtpx:TrackPointExtension></extensions>
+      </trkpt>
+      <trkpt lat="52.2308" lon="21.0122">
+        <ele>103</ele>
+        <time>2025-10-28T18:31:30Z</time>
+        <extensions><gpxtpx:TrackPointExtension><gpxtpx:hr>133</gpxtpx:hr></gpxtpx:TrackPointExtension></extensions>
+      </trkpt>
+      <trkpt lat="52.2309" lon="21.0123">
+        <ele>104</ele>
+        <time>2025-10-28T18:32:00Z</time>
+        <extensions><gpxtpx:TrackPointExtension><gpxtpx:hr>140</gpxtpx:hr></gpxtpx:TrackPointExtension></extensions>
+      </trkpt>
+      <trkpt lat="52.2310" lon="21.0124">
+        <ele>104</ele>
+        <time>2025-10-28T18:32:30Z</time>
+        <extensions><gpxtpx:TrackPointExtension><gpxtpx:hr>148</gpxtpx:hr></gpxtpx:TrackPointExtension></extensions>
+      </trkpt>
+      <trkpt lat="52.2311" lon="21.0125">
+        <ele>105</ele>
+        <time>2025-10-28T18:33:00Z</time>
+        <extensions><gpxtpx:TrackPointExtension><gpxtpx:hr>154</gpxtpx:hr></gpxtpx:TrackPointExtension></extensions>
+      </trkpt>
+      <trkpt lat="52.2312" lon="21.0126">
+        <ele>105</ele>
+        <time>2025-10-28T18:33:30Z</time>
+        <extensions><gpxtpx:TrackPointExtension><gpxtpx:hr>160</gpxtpx:hr></gpxtpx:TrackPointExtension></extensions>
+      </trkpt>
+      <trkpt lat="52.2313" lon="21.0127">
+        <ele>106</ele>
+        <time>2025-10-28T18:34:00Z</time>
+        <extensions><gpxtpx:TrackPointExtension><gpxtpx:hr>165</gpxtpx:hr></gpxtpx:TrackPointExtension></extensions>
+      </trkpt>
+      <trkpt lat="52.2314" lon="21.0128">
+        <ele>106</ele>
+        <time>2025-10-28T18:34:30Z</time>
+        <extensions><gpxtpx:TrackPointExtension><gpxtpx:hr>150</gpxtpx:hr></gpxtpx:TrackPointExtension></extensions>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>

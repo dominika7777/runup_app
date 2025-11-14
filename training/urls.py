@@ -5,4 +5,5 @@ urlpatterns = [
     path('workouts/', views.workout_list, name='workout_list'),
     path('workouts/<int:pk>/', views.workout_detail, name='workout_detail'),
     path('upload/', views.upload_gpx, name='upload_gpx'),
+    path('tools/pace/', views.pace_calculator, name='pace_calculator'),
 ]

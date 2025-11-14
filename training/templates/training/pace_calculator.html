@@ -1,0 +1,259 @@
+<h1>Kalkulator tempa (prototyp)</h1>
+<p>
+	Oblicz tempo i prędkość na podstawie <strong>czasu + dystansu</strong>, albo
+	przewidywany czas z <strong>tempa + dystansu</strong>.
+</p>
+
+<form id="form" onsubmit="return false;">
+	<fieldset>
+		<legend>Tryb</legend>
+		<label
+			><input type="radio" name="mode" value="time_to_pace" checked /> Czas +
+			dystans → tempo</label
+		>
+		<label style="margin-left: 1rem"
+			><input type="radio" name="mode" value="pace_to_time" /> Tempo + dystans →
+			czas</label
+		>
+	</fieldset>
+
+	<div class="row">
+		<label
+			>Gotowe dystanse:
+			<select id="preset">
+				<option value="">— wybierz —</option>
+				<option value="1">1 km</option>
+				<option value="5">5 km</option>
+				<option value="10">10 km</option>
+				<option value="21.0975">Półmaraton (21.0975 km)</option>
+				<option value="42.195">Maraton (42.195 km)</option>
+			</select>
+		</label>
+		<label style="margin-left: 1rem"
+			>Dystans [km]:
+			<input id="distance" type="number" min="0.1" step="0.001" value="5" />
+		</label>
+	</div>
+
+	<div id="timeFields" class="row">
+		<label
+			>Czas (hh:mm:ss lub mm:ss):
+			<input id="time" type="text" placeholder="np. 00:50:00" />
+		</label>
+	</div>
+
+	<div id="paceFields" class="row" style="display: none">
+		<label
+			>Tempo – min/km:
+			<input id="paceMin" type="number" min="0" step="1" placeholder="min" /> :
+			<input
+				id="paceSec"
+				type="number"
+				min="0"
+				max="59"
+				step="1"
+				placeholder="sek"
+			/>
+		</label>
+	</div>
+
+	<div class="row">
+		<label
+			><input id="showSplits" type="checkbox" checked /> Pokaż międzyczasy co 1
+			km</label
+		>
+	</div>
+
+	<button type="button" id="calcBtn">Oblicz</button>
+	<p style="margin-top: 0.5rem">
+		<a href="{% url 'workout_list' %}">← Lista treningów</a>
+	</p>
+</form>
+
+<hr />
+<div id="results"></div>
+
+<style>
+	body {
+		font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+		line-height: 1.45;
+	}
+	.row {
+		margin: 0.5rem 0;
+	}
+	input,
+	select,
+	button {
+		padding: 0.4rem 0.6rem;
+	}
+	table {
+		border-collapse: collapse;
+		margin-top: 0.5rem;
+	}
+	th,
+	td {
+		border: 1px solid #ddd;
+		padding: 0.35rem 0.55rem;
+		text-align: right;
+	}
+	th:first-child,
+	td:first-child {
+		text-align: center;
+	}
+	fieldset {
+		border: 1px solid #ddd;
+		padding: 0.5rem 0.75rem;
+	}
+</style>
+
+<script>
+	const modeEls = document.querySelectorAll('input[name="mode"]')
+	const timeFields = document.getElementById("timeFields")
+	const paceFields = document.getElementById("paceFields")
+	const preset = document.getElementById("preset")
+	const distanceEl = document.getElementById("distance")
+	const calcBtn = document.getElementById("calcBtn")
+	const results = document.getElementById("results")
+
+	function pad2(n) {
+		return String(n).padStart(2, "0")
+	}
+
+	function parseTimeToSeconds(s) {
+		if (!s) return NaN
+		s = s.trim()
+		const parts = s.split(":").map((x) => x.trim())
+		let h = 0,
+			m = 0,
+			sec = 0
+		if (parts.length === 3) {
+			h = parseInt(parts[0], 10)
+			m = parseInt(parts[1], 10)
+			sec = parseInt(parts[2], 10)
+		} else if (parts.length === 2) {
+			m = parseInt(parts[0], 10)
+			sec = parseInt(parts[1], 10)
+		} else if (parts.length === 1) {
+			sec = parseFloat(parts[0])
+		} else {
+			return NaN
+		}
+		if ([h, m, sec].some((x) => Number.isNaN(x))) return NaN
+		return h * 3600 + m * 60 + sec
+	}
+
+	function formatHHMMSS(total) {
+		total = Math.round(total)
+		const h = Math.floor(total / 3600)
+		const m = Math.floor((total % 3600) / 60)
+		const s = total % 60
+		return (h > 0 ? pad2(h) + ":" : "") + pad2(m) + ":" + pad2(s)
+	}
+
+	function formatPace(secPerKm) {
+		const m = Math.floor(secPerKm / 60)
+		const s = Math.round(secPerKm % 60)
+		return m + ":" + pad2(s) + " min / km"
+	}
+
+	function switchMode() {
+		const mode = document.querySelector('input[name="mode"]:checked').value
+		if (mode === "time_to_pace") {
+			timeFields.style.display = ""
+			paceFields.style.display = "none"
+		} else {
+			timeFields.style.display = "none"
+			paceFields.style.display = ""
+		}
+		results.innerHTML = ""
+	}
+	modeEls.forEach((r) => r.addEventListener("change", switchMode))
+
+	preset.addEventListener("change", () => {
+		if (preset.value) distanceEl.value = preset.value
+	})
+
+	calcBtn.addEventListener("click", () => {
+		const mode = document.querySelector('input[name="mode"]:checked').value
+		const distStr = (distanceEl.value || "").replace(",", ".")
+		const distance = parseFloat(distStr)
+		if (!distance || distance <= 0) {
+			results.innerHTML =
+				'<p style="color:#c00">Podaj prawidłowy dystans (km).</p>'
+			return
+		}
+
+		let html = "<h2>Wyniki</h2>"
+		const showSplits = document.getElementById("showSplits").checked
+
+		if (mode === "time_to_pace") {
+			const tStr = document.getElementById("time").value
+			const total = parseTimeToSeconds(tStr)
+			if (!Number.isFinite(total) || total <= 0) {
+				results.innerHTML =
+					'<p style="color:#c00">Podaj prawidłowy czas (hh:mm:ss lub mm:ss).</p>'
+				return
+			}
+			const pace = total / distance // s / km
+			const speed = (3600 * distance) / total // km/h
+			html += `<p><strong>Tempo:</strong> ${formatPace(pace)}<br>
+               <strong>Prędkość:</strong> ${speed.toFixed(2)} km/h<br>
+               <strong>Czas całkowity:</strong> ${formatHHMMSS(total)}</p>`
+
+			if (showSplits) {
+				const wholeKm = Math.floor(distance)
+				let cum = 0
+				html +=
+					"<table><thead><tr><th>Km</th><th>Czas narastająco</th></tr></thead><tbody>"
+				for (let km = 1; km <= Math.min(wholeKm, 60); km++) {
+					cum += pace
+					html += `<tr><td>${km}</td><td>${formatHHMMSS(cum)}</td></tr>`
+				}
+				const rem = distance - wholeKm
+				if (rem > 1e-6) {
+					cum += pace * rem
+					html += `<tr><td>${distance.toFixed(3)}</td><td>${formatHHMMSS(
+						cum
+					)} (finisz)</td></tr>`
+				}
+				html += "</tbody></table>"
+			}
+		} else {
+			// pace_to_time
+			const pm = parseInt(document.getElementById("paceMin").value || "0", 10)
+			const ps = parseInt(document.getElementById("paceSec").value || "0", 10)
+			if (!Number.isFinite(pm) || !Number.isFinite(ps) || ps < 0 || ps > 59) {
+				results.innerHTML =
+					'<p style="color:#c00">Podaj prawidłowe tempo (min i sek na km).</p>'
+				return
+			}
+			const pace = pm * 60 + ps // s / km
+			const total = pace * distance // s
+			const speed = 3600 / pace // km/h (bo 1 km trwa "pace" sekund)
+			html += `<p><strong>Czas końcowy:</strong> ${formatHHMMSS(total)}<br>
+               <strong>Tempo:</strong> ${formatPace(pace)}<br>
+               <strong>Prędkość:</strong> ${speed.toFixed(2)} km/h</p>`
+
+			if (showSplits) {
+				const wholeKm = Math.floor(distance)
+				let cum = 0
+				html +=
+					"<table><thead><tr><th>Km</th><th>Czas narastająco</th></tr></thead><tbody>"
+				for (let km = 1; km <= Math.min(wholeKm, 60); km++) {
+					cum += pace
+					html += `<tr><td>${km}</td><td>${formatHHMMSS(cum)}</td></tr>`
+				}
+				const rem = distance - wholeKm
+				if (rem > 1e-6) {
+					cum += pace * rem
+					html += `<tr><td>${distance.toFixed(3)}</td><td>${formatHHMMSS(
+						cum
+					)} (finisz)</td></tr>`
+				}
+				html += "</tbody></table>"
+			}
+		}
+
+		results.innerHTML = html
+	})
+</script>
