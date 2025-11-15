@@ -1,18 +1,19 @@
-<p><a href="{% url 'upload_gpx' %}">➕ Dodaj trening (GPX)</a></p>
 <h1>Treningi</h1>
-<ul>
-	{% for w in workouts %}
-	<li>
-		<a href="{% url 'workout_detail' w.id %}">
-			{{ w.date }} • {{ w.duration_s }} s • HRavg={{ w.avg_hr }} • HRmax={{
-			w.max_hr }}
-		</a>
-	</li>
-	{% empty %}
-	<li>Brak treningów — wgraj GPX (komenda import_gpx).</li>
-	{% endfor %}
-</ul>
+
 <p>
-	<a href="{% url 'upload_gpx' %}">➕ Dodaj trening (GPX)</a> |
-	<a href="{% url 'pace_calculator' %}">🧮 Kalkulator tempa</a>
-  </p>
+  <a href="{% url 'upload_gpx' %}">➕ Dodaj trening (GPX)</a> |
+  <a href="{% url 'pace_calculator' %}">🧮 Kalkulator tempa</a>
+</p>
+
+<ul>
+  {% for w in workouts %}
+    <li>
+      <a href="{% url 'workout_detail' w.id %}">
+        {{ w.date|date:"M d, Y, g a" }} • {{ w.duration_s }} s •
+        HRavg={{ w.avg_hr }} • HRmax={{ w.max_hr|default:"–" }}
+      </a>
+    </li>
+  {% empty %}
+    <li>Brak treningów. <a href="{% url 'upload_gpx' %}">Wgraj plik GPX</a>.</li>
+  {% endfor %}
+</ul>
